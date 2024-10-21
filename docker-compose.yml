@@ -1,0 +1,35 @@
+version: '3.6'
+services:
+  gitlab:
+    image: gitlab/gitlab-ee:latest
+    container_name: gitlab
+    restart: always
+    hostname: 'localhost'
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url 'http://localhost'
+    ports:
+      - '80:80'
+      - '443:443'
+      - '22:22'
+    volumes:
+      - '/Users/franciscojavierjimenezcohen/Desktop/ambientes/config:/etc/gitlab'
+      - '/Users/franciscojavierjimenezcohen/Desktop/ambientes/logs:/var/log/gitlab'
+      - '/Users/franciscojavierjimenezcohen/Desktop/ambientes/data:/var/opt/gitlab'
+    shm_size: '256m'
+    mem_limit: 6g   # Asignar 6 GB de memoria al contenedor GitLab
+    cpus: 4         # Limitar el uso de CPU a 4 núcleos
+
+  gitlab-runner:
+    image: gitlab/gitlab-runner:latest
+    container_name: gitlab-runner
+    restart: always
+    volumes:
+      - '/Users/franciscojavierjimenezcohen/Desktop/ambientes/gitlab-runner-config:/etc/gitlab-runner'
+    environment:
+      - CI_SERVER_URL=http://localhost/
+      - REGISTRATION_TOKEN=your_registration_token_here
+    depends_on:
+      - gitlab
+    mem_limit: 2g   # Asignar 2 GB de memoria al contenedor Runner
+    cpus: 2         # Limitar el uso de CPU a 2 núcleos
